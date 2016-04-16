@@ -16,7 +16,7 @@
             db 200dup('$')
             
    
-    stY    db 200  ; max number of characters allowed(199)
+    strY    db 200  ; max number of characters allowed(199)
             db ? ; so ky tu nguoi dung nhap vao
             db 200dup('$') 
     lengthX dw ?
@@ -24,7 +24,7 @@
     
     isChildren db 0
     count db 0 
-    local db 0
+    local dw 0
 .code
 main proc
     mov ax,@data   
@@ -52,13 +52,15 @@ main proc
     ; lay do dai chuoi X luu vao CX, do la 1byte nen luu vao cl, va de ch =0     
     mov si, offset strX + 1             ; tro den offset cua o nho luu do dai
     mov cl,[si]                         ; luu do dai tro boi ds:si vao cl
-    mov ch,0                            ; clear ch to use cx    
-    mov lengthX,cx                      ; luu do dai strX vao lengthX
+    mov ch,0                            ; clear ch to use cx
+    lea bx,lengthX                           
+    mov [bx],cx                         ; luu do dai strX vao lengthX   
     inc cx                              ; cx = length + 1 day la vi tri can phai chua '$' de hien xau
     add si,cx                           ; luc nay si tro den vi tri length + 1
     mov al,'$'
     mov [si],al                         ; luc nay length + 1 chua '$'
     ; now cx store length of strX
+     
     
     ; nhap chuoi Y
     ;thong bao 2
@@ -72,7 +74,7 @@ main proc
     mov ah,09h
     mov dx,offset tb2
     int 21h
-    
+      
     ; nhap Y
     mov ah,0Ah
     mov dx, offset strY
@@ -80,8 +82,9 @@ main proc
     
     mov si, offset strY + 1            
     mov cl,[si]                      
-    mov ch,0 
-    mov lengthY,cx                           
+    mov ch,0   
+    lea bx,lengthY
+    mov [bx],cx                           
     inc cx                              
     add si,cx                           
     mov al,'$'
@@ -93,6 +96,7 @@ main proc
     int 21h                             ; xuong dong
     mov dl,13
     int 21h                             ; ve dau dong  
+    
     
     
     call  cmpCharacter
@@ -114,9 +118,11 @@ main endp
     ; ham so sanh theo de bai
 cmpCharacter proc near 
     mov si, offset strX + 1
-    mov di, offset strY + 1 
+    mov di, offset strY + 1  
+    
     push di
-    mov cx,lengthX   
+    lea bx,lengthX
+    mov cx,ds:[bx]   
 ;duyet toan bo chuoi X
 FORX:
     cmpsb
@@ -129,7 +135,7 @@ continue:
     loop FORX
     
     ret     
-cmpCharacter end
+cmpCharacter endp
        
        
     ; ham kiem tra chuoi con
@@ -137,17 +143,17 @@ checkSubString proc near
     
 FORY:
     cmpsb
-    jnz continue
+    jnz continue1
     add si,1
     add di,1
     loop FORY ; luc nay CX van giam    
     add count,1 ; khi duyet het xau Y thi Y la con cua X
     cmp count,1
-    jnz continue ; neu Y duoc tim thay lan thu 2 hoac lon hon thi jump
+    jnz continue1 ; neu Y duoc tim thay lan thu 2 hoac lon hon thi jump
     mov local,si
-continue:
+continue1:
     
     ret
-checkSubString end
+checkSubString endp
 end main
     
