@@ -53,8 +53,8 @@ main proc
     mov si, offset strX + 1             ; tro den offset cua o nho luu do dai
     mov cl,[si]                         ; luu do dai tro boi ds:si vao cl
     mov ch,0                            ; clear ch to use cx
-    lea bx,lengthX                           
-    mov [bx],cx                         ; luu do dai strX vao lengthX   
+                              
+    mov lengthX,cx                        ; luu do dai strX vao lengthX   
     inc cx                              ; cx = length + 1 day la vi tri can phai chua '$' de hien xau
     add si,cx                           ; luc nay si tro den vi tri length + 1
     mov al,'$'
@@ -83,8 +83,7 @@ main proc
     mov si, offset strY + 1            
     mov cl,[si]                      
     mov ch,0   
-    lea bx,lengthY
-    mov [bx],cx                           
+    mov lengthY,cx                           
     inc cx                              
     add si,cx                           
     mov al,'$'
@@ -121,8 +120,7 @@ cmpCharacter proc near
     mov di, offset strY + 1  
     
     push di
-    lea bx,lengthX
-    mov cx,ds:[bx]   
+    mov cx,lengthX   
 ;duyet toan bo chuoi X
 FORX:
     cmpsb
