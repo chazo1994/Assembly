@@ -6,7 +6,7 @@
     tb2 DB "nhap xau ky tu Y: $"  
     
     kq1 db "xau Y la con cua X! $"
-    kq2 db "xau Y khong phai la con cua Y! $"
+    kq2 db "xau Y khong phai la con cua X! $"
     
     vitri db "vi tri xau Y: $"
     soluong db " xau X chua : $"
@@ -91,8 +91,6 @@ main proc
     mov dl,13
     int 21h                             ; ve dau dong  
     
-    
-    
     call  cmpCharacter
     
     cmp count,0
@@ -100,31 +98,33 @@ main proc
     mov ah,09h
     lea dx,kq1
     int 21h
+    jmp exit
     
-noChildren: 
+noChildren:
     mov ah,09h 
     lea dx,kq2
     int 21h                     
-    
+exit:
+    mov ah,4ch
+    int 21h   
 main endp
       
       
     ; ham so sanh theo de bai
 cmpCharacter proc near 
-    mov si, offset strX + 1
-    mov di, offset strY + 1  
-    
-    push di
-    mov cx,lengthX   
+    mov si, offset strX + 2
+    mov di, offset strY + 2  
+    mov cx,lengthX  
 ;duyet toan bo chuoi X
 FORX:
-    cmpsb
+    cmpsb        ; so sanh va tang si va di mot don vi
+    
     jnz continue
     push di
     call checkSubString 
     pop di
-continue: 
-    add si,1   ; tang si 1 don vi
+continue:
+    dec di ; dua di tro ve gia tri truoc khi tang boi cmpsb   
     loop FORX
     
     ret     
@@ -133,13 +133,20 @@ cmpCharacter endp
        
     ; ham kiem tra chuoi con
 checkSubString proc near
+    mov bx,si 
+    dec si ; vi sau lenh cmpsb truoc do si da tang 1 don vi
+    add bx,lengthY
+    dec bx ;bx=bx-1     bx tro den diem cuoi cua chuoi strY
+FORY: 
     
-FORY:
-    cmpsb
-    jnz continue1
-    add si,1
-    add di,1
-    loop FORY ; luc nay CX van giam    
+    cmpsb          ; so sanh va si=si+1 ; di = di +1
+    jnz continue1 
+    cmp si,bx    ;khi duyet den cuoi xau y
+    jz isChildrenX
+    loop FORY ; luc nay CX van giam  
+    cmp cx,0    ; khi ma duyet het chuoi X
+    jz continue1                          
+isChildrenX:
     add count,1 ; khi duyet het xau Y thi Y la con cua X
     cmp count,1
     jnz continue1 ; neu Y duoc tim thay lan thu 2 hoac lon hon thi jump
