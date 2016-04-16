@@ -11,14 +11,9 @@
     vitri db "vi tri xau Y: $"
     soluong db " xau X chua : $"
     
-    strX    db 200  ; max number of characters allowed(199)
-            db ? ; so ky tu nguoi dung nhap vao
-            db 200dup('$')
-            
-   
-    strY    db 200  ; max number of characters allowed(199)
-            db ? ; so ky tu nguoi dung nhap vao
-            db 200dup('$') 
+    strX    db 200,?,200 dup (' ')  ;200 is max number of characters allowed(199) , ? is number of characters user entered   
+    
+    strY    db 200,?,200 dup (' ') 
     lengthX dw ?
     lengthY dw ?  
     
@@ -53,7 +48,7 @@ main proc
     mov si, offset strX + 1             ; tro den offset cua o nho luu do dai
     mov cl,[si]                         ; luu do dai tro boi ds:si vao cl
     mov ch,0                            ; clear ch to use cx
-                              
+   ; lea dx,lengthX                           
     mov lengthX,cx                        ; luu do dai strX vao lengthX   
     inc cx                              ; cx = length + 1 day la vi tri can phai chua '$' de hien xau
     add si,cx                           ; luc nay si tro den vi tri length + 1
