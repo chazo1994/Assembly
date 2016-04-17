@@ -134,7 +134,7 @@ cmpCharacter endp
     ; ham kiem tra chuoi con
 checkSubString proc near
     mov bx,si 
-    dec si ; vi sau lenh cmpsb truoc do si da tang 1 don vi
+    ;dec si ; vi sau lenh cmpsb truoc do si da tang 1 don vi
     add bx,lengthY
     dec bx ;bx=bx-1     bx tro den diem cuoi cua chuoi strY
 FORY: 
@@ -142,10 +142,11 @@ FORY:
     cmpsb          ; so sanh va si=si+1 ; di = di +1
     jnz continue1 
     cmp si,bx    ;khi duyet den cuoi xau y
-    jz isChildrenX
-    loop FORY ; luc nay CX van giam  
+    jz isChildrenX 
     cmp cx,0    ; khi ma duyet het chuoi X
-    jz continue1                          
+    jz continue1
+    loop FORY ; luc nay CX van giam  
+                             
 isChildrenX:
     add count,1 ; khi duyet het xau Y thi Y la con cua X
     cmp count,1
