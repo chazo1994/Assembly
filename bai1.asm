@@ -18,8 +18,8 @@
     lengthY dw ?  
     
     isChildren db 0
-    count db 0 
-    local dw 0
+    count dw 0 
+    local dw 10 dub(0)
 .code
 main proc
     mov ax,@data   
@@ -98,12 +98,66 @@ main proc
     mov ah,09h
     lea dx,kq1
     int 21h
-    jmp exit
+    jmp printf
     
 noChildren:
     mov ah,09h 
     lea dx,kq2
-    int 21h                     
+    int 21h 
+    jmp exit
+    
+printf:       
+    ; in vi tri xau con
+    mov ah,02h
+    mov dl,10
+    int 21h                             ; xuong dong
+    mov dl,13
+    int 21h 
+    mov ah,09h
+    lea dx,vitri
+    int 21h
+    
+    mov ah,02h
+    mov dl,10
+    int 21h                             ; xuong dong
+    mov dl,13 
+    int 21h 
+    mov cx,count
+    push si 
+    mov si,offset local
+Lap:
+    push ax 
+    mov ax,0
+    mov al,[si]
+    inc si
+    call printNumber
+    pop ax
+    dec cx
+    jnz Lap     
+    pop si
+    
+              
+    ; in so xau con
+    mov ah,02h
+    mov dl,10
+    int 21h                             ; xuong dong
+    mov dl,13
+    int 21h    
+    mov ah,09h
+    lea dx,soluong
+    int 21h
+    
+    
+    mov ah,02h
+    mov dl,10
+    int 21h                             ; xuong dong
+    mov dl,13
+    int 21h
+    push ax
+    mov ax,0
+    mov ax,count
+    call printNumber  
+    pop ax                  
 exit:
     mov ah,4ch
     int 21h   
@@ -132,13 +186,18 @@ cmpCharacter endp
        
        
     ; ham kiem tra chuoi con
-checkSubString proc near
+checkSubString proc near 
+    dec si ; vi sau khi cmps phia tren si da tang len mot don vi 
+    dec di; vi sau khi smpsb phia tren si da tang len mot don vi
     mov bx,si 
     ;dec si ; vi sau lenh cmpsb truoc do si da tang 1 don vi
     add bx,lengthY
-    dec bx ;bx=bx-1     bx tro den diem cuoi cua chuoi strY
+    ;dec bx ;bx=bx-1     bx tro den diem cuoi cua chuoi strY
+    push dx
+    mov dx,0
+    mov dx,lengthX
+    sub dx,cx   ; lay vi tri bang nhau dau tien cua y va x  s    
 FORY: 
-    
     cmpsb          ; so sanh va si=si+1 ; di = di +1
     jnz continue1 
     cmp si,bx    ;khi duyet den cuoi xau y
@@ -148,13 +207,55 @@ FORY:
     loop FORY ; luc nay CX van giam  
                              
 isChildrenX:
+   
+    push si 
+    mov si,offset local   ; dung si de duyet mang
+    add si,count         ; do dia mang bang so lan chua y
+    mov [si],dx 
+    pop si
+    
     add count,1 ; khi duyet het xau Y thi Y la con cua X
     cmp count,1
-    jnz continue1 ; neu Y duoc tim thay lan thu 2 hoac lon hon thi jump
-    mov local,si
+    ;jnz continue1 ; neu Y duoc tim thay lan thu 2 hoac lon hon thi jump 
+    
 continue1:
+    pop dx 
     
     ret
-checkSubString endp
+checkSubString endp         
+
+;ham in so thap phan
+
+printNumber proc near
+     push cx
+     push bx
+     push dx
+     mov cx,0
+     mov bx,10  
+     mov dx,0
+repeat:
+    IDIV bx
+    push dx  
+    mov dx,0
+    inc cx
+    cmp ax,0  
+    jnz repeat
+for:    
+    pop dx 
+    add dl,30h
+    mov ah,02h
+    int 21h
+    loop for
+    
+    pop dx
+    pop bx
+    pop cx 
+    
+    mov ah,02h
+    mov dl,' '
+    int 21h
+    
+    ret
+printNumber endp
 end main
     
