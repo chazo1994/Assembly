@@ -6,7 +6,7 @@
     n dw 0
     
     tb1 db "nhap N: $"
-    tb2 db "so lon nhat trong mang la: $"
+    tb2 db 10, 13, "so lon nhat trong mang la: $"
     tb3 db "nhap mang so hexa: $"
 .code    
 main proc
@@ -58,14 +58,19 @@ timtiep:
     add di,2         ; tang di
     loop timmax
     
+    push ax ; cat gia tri lon nhat vao ngan xep
     ;in so max
+    mov ah,09h
+    lea dx,tb2
+    int 21h
     mov ah,02h   
     mov dl,10
     int 21h   ; xuong dong
     mov dl,13
     int 21h   ; ve dau dong
     
-    mov bx,ax
+    ;mov bx,ax 
+    pop bx
     call sap 
 main endp  
 inputNumber proc near
@@ -135,7 +140,8 @@ repeat:
     jnz repeat  
     mov ah,02h 
 for:
-    pop dx
+    pop dx  
+    mov dl,dh ; vi phan du ban dau o ah duoc push vao stack
     add dl,30h      
     int 21h 
     loop for   
